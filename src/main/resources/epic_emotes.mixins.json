@@ -1,0 +1,13 @@
+{
+  "required": true,
+  "package": "net.m3tte.epic_emotes.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "refmap": "epic_emotes.mixins.refmap.json",
+  "server": [
+  ],
+  "mixins": [
+  ],
+  "client": [
+  ],
+  "minVersion": "0.8"
+}
