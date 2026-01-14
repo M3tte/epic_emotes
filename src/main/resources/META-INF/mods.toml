@@ -3,30 +3,37 @@ loaderVersion="[36,)"
 license="Academic Free License v3.0"
 
 [[mods]]
-modId="tcorp"
+modId="epic_emotes"
 version="1.0.0"
-displayName="TCorp"
-credits="Created using mod maker MCreator - https://mcreator.net/about"
-displayURL="https://mcreator.net"
+displayName="Epic Emotes"
+credits=""
+displayURL=""
 authors="M3tte"
 
-[[dependencies.tcorp]]
+[[dependencies.epic_emotes]]
     modId="forge" #mandatory
     mandatory=true #mandatory
     versionRange="[36.2.39,)" #mandatory
     ordering="NONE"
     side="BOTH"
-[[dependencies.tcorp]]
+[[dependencies.epic_emotes]]
     modId="minecraft"
     mandatory=true
     versionRange="[1.16.5]"
     ordering="NONE"
     side="BOTH"
-[[dependencies.tcorp]]
+[[dependencies.epic_emotes]]
     modId="epicfight"
     mandatory=true
     versionRange="[16.6.4,)"
-    ordering="BEFORE"
+    ordering="AFTER"
+    side="BOTH"
+
+[[dependencies.epic_emotes]]
+    modId="replaymod"
+    mandatory=false
+versionRange="[2.5.1,)"
+    ordering="AFTER"
     side="BOTH"
 
 

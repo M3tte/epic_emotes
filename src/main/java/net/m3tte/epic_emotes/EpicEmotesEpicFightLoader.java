@@ -5,7 +5,7 @@
 
 package net.m3tte.epic_emotes;
 
-import net.m3tte.epic_emotes.gameasset.TCorpAnimations;
+import net.m3tte.epic_emotes.gameasset.EpicEmotesAnimations;
 import net.minecraftforge.eventbus.api.IEventBus;
 
 public class EpicEmotesEpicFightLoader {
@@ -13,7 +13,7 @@ public class EpicEmotesEpicFightLoader {
     }
 
     public static void registerStuffs(IEventBus bus) {
-        bus.addListener(TCorpAnimations::registerAnimations);
+        bus.addListener(EpicEmotesAnimations::registerAnimations);
 
         EpicEmotesParticleRegistry.PARTICLES.register(bus);
 

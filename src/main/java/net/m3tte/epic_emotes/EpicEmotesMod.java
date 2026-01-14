@@ -17,7 +17,8 @@
  */
 package net.m3tte.epic_emotes;
 
-import net.m3tte.epic_emotes.keybind.OpenEmotesKeybind;
+import net.m3tte.epic_emotes.keybind.EpicEmotesKeybinds;
+import net.m3tte.epic_emotes.network.EpicEmotePackageRegistry;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.enchantment.Enchantment;
@@ -57,8 +58,9 @@ public class EpicEmotesMod {
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::clientLoad);
 		EpicEmotesEpicFightLoader.registerStuffs(FMLJavaModLoadingContext.get().getModEventBus());
 		EpicEmotesGUIElements.register(FMLJavaModLoadingContext.get().getModEventBus());
-		MinecraftForge.EVENT_BUS.register(new TcorpModFMLBusEvents(this)); // Modbusevents
+		MinecraftForge.EVENT_BUS.register(new EpicEmotesFMLBusEvents(this)); // Modbusevents
 		MinecraftForge.EVENT_BUS.register(new EpicEmotesModVariables()); // Dynamic variable registry
+		MinecraftForge.EVENT_BUS.register(new EpicEmotePackageRegistry()); // Network packages
 	}
 
 	private void init(FMLCommonSetupEvent event) {
@@ -70,7 +72,8 @@ public class EpicEmotesMod {
 		elements.getElements().forEach(element -> element.clientLoad(event));
 		IResourceManager resourceManager = Minecraft.getInstance().getResourceManager();
 		EpicEmotesGUIElements.registerClient();
-		OpenEmotesKeybind.setupKeybind();
+		MinecraftForge.EVENT_BUS.register(new EpicEmotesKeybinds()); // Custom Keybinds
+
 	}
 
 	@SubscribeEvent
@@ -89,10 +92,10 @@ public class EpicEmotesMod {
 	}
 
 
-	private static class TcorpModFMLBusEvents {
+	private static class EpicEmotesFMLBusEvents {
 		private final EpicEmotesMod parent;
 
-		TcorpModFMLBusEvents(EpicEmotesMod parent) {
+		EpicEmotesFMLBusEvents(EpicEmotesMod parent) {
 			this.parent = parent;
 		}
 
