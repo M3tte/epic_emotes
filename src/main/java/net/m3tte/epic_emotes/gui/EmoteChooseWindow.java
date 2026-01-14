@@ -3,13 +3,18 @@ package net.m3tte.epic_emotes.gui;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
+import net.m3tte.epic_emotes.systems.EmoteCategory;
+import net.m3tte.epic_emotes.systems.EmoteNodeElement;
+import net.m3tte.epic_emotes.systems.EmoteSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.Tuple;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -25,6 +30,19 @@ public class EmoteChooseWindow extends ContainerScreen<EmoteChooseGUI.GuiContain
 
 	private final ResourceLocation RETURN_LOC = new ResourceLocation("epic_emotes:textures/gui/returnbutton.png");
 	private final ResourceLocation DEFAULT_SIT_ICON = new ResourceLocation("epic_emotes:textures/gui/sit.png");
+
+	private EmoteCategory selectedElement = EmoteSystem.getRootCategory();
+
+
+
+	private Tuple<Double, Double> generatePositionFromRotation(float rotPercent) {
+		Double absoluteRot = Math.PI * 2 * rotPercent;
+
+		double x = Math.sin(absoluteRot) * 75;
+		double y = Math.cos(absoluteRot) * -75;
+		System.out.println("OFFS FOR "+rotPercent+" ARE : "+x+"|"+y);
+		return new Tuple<>(x,y);
+	}
 
 	public EmoteChooseWindow(EmoteChooseGUI.GuiContainerMod container, PlayerInventory inventory, ITextComponent text) {
 		super(container, inventory, text);
@@ -89,25 +107,46 @@ public class EmoteChooseWindow extends ContainerScreen<EmoteChooseGUI.GuiContain
 	public void init(Minecraft minecraft, int width, int height) {
 		super.init(minecraft, width, height);
 
-		int centerX = this.getXSize() / 2;
-		int centerY = this.getYSize() / 2;
+		if (minecraft == null)
+			return;
+
+		int centerX = minecraft.screen.width / 2;
+		int centerY = minecraft.screen.height / 2;
 
 		minecraft.keyboardHandler.setSendRepeatsToGui(true);
 		// Bottom  ( Durandal )
 
-		this.addButton(new HoverButton(this.leftPos + centerX - 24, this.topPos + centerY, 47, 47, new StringTextComponent("Return"), e -> {
-			if (true) {
-				//EgoWeaponsMod.PACKET_HANDLER.sendToServer(new EmoteChooseGUI.ButtonPressedMessage(0, x, y, z));
-				EmoteChooseGUI.handleWeaponSwap(entity, 0);
-			}
-		}, RETURN_LOC, null));
+		if (selectedElement.getParent() != null) {
+			this.addButton(new HoverButton(centerX - 24, centerY -24, 47, 47, new StringTextComponent("Return"), e -> {
+				if (selectedElement.getParent() != null) {
+					selectedElement = (EmoteCategory) selectedElement.getParent();
+					init(minecraft, width, height);
+				}
 
-		this.addButton(new HoverButton(this.leftPos + centerX - 24, this.topPos + centerY + 70, 47, 47, new StringTextComponent("Sit 1"), e -> {
-			if (true) {
-				//EgoWeaponsMod.PACKET_HANDLER.sendToServer(new EmoteChooseGUI.ButtonPressedMessage(0, x, y, z));
-				EmoteChooseGUI.handleWeaponSwap(entity, 0);
-			}
-		}, DEFAULT_SIT_ICON));
+				}, RETURN_LOC, null));
+
+		}
+
+		double steps = 1d / selectedElement.getChildren().size();
+
+		float val = 0;
+
+		for (EmoteNodeElement elm : selectedElement.getChildren()) {
+
+			Tuple<Double, Double> position = generatePositionFromRotation(val);
+
+			this.addButton(new HoverButton((int)(centerX + position.getA() - 24), (int)(centerY + position.getB()) - 24, 47, 47, new TranslationTextComponent(elm.getLanguageKey()), e -> {
+				if (elm instanceof EmoteCategory) {
+					selectedElement = (EmoteCategory) elm;
+					init(minecraft, width, height);
+				}
+			}, elm.getIcon()));
+			val += steps;
+		}
+
+
+
+
 
 
 	}

@@ -1,12 +1,24 @@
 package net.m3tte.epic_emotes.systems;
 
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.LanguageMap;
 
 public class EmoteNodeElement {
 
-    public EmoteNodeElement(String languageKey, EmoteNodeElement parentElement) {
+    private ResourceLocation icon = null;
+
+    public ResourceLocation getIcon() {
+        return icon;
+    }
+
+    public void setIcon(ResourceLocation icon) {
+        this.icon = icon;
+    }
+
+    public EmoteNodeElement(String languageKey, EmoteNodeElement parentElement, ResourceLocation icon) {
         this.languageKey = languageKey;
         this.parentElement = parentElement;
+        this.icon = icon;
     }
 
 
