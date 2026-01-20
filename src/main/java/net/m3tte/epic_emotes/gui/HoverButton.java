@@ -2,23 +2,53 @@ package net.m3tte.epic_emotes.gui;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
+import net.m3tte.epic_emotes.EpicEmotesModVariables;
+import net.m3tte.epic_emotes.systems.ActionEmote;
+import net.m3tte.epic_emotes.systems.EmoteNodeElement;
+import net.m3tte.epic_emotes.systems.EmoteSystem;
+import net.m3tte.epic_emotes.systems.RepeatingEmote;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
+import org.lwjgl.opengl.GL11;
+
+import java.util.Objects;
 
 public class HoverButton extends Button {
-    public HoverButton(int x, int y, int width, int height, ITextComponent title, IPressable pressedAction, ResourceLocation buttonImage, ResourceLocation iconImage) {
+
+    private EmoteNodeElement linkedEmote = null;
+    int iterationIndex = 0;
+
+    public HoverButton(int x, int y, int width, int height, EmoteNodeElement linkedEmote, IPressable pressedAction, ResourceLocation buttonImage, ResourceLocation iconImage, int index) {
+        super(x, y, width, height, new TranslationTextComponent(linkedEmote.getLanguageKey()), pressedAction);
+        this.BUTTON_RESOURCE_LOCATION = buttonImage;
+        this.ICON_RESOURCE_LOCATION = iconImage;
+        this.linkedEmote = linkedEmote;
+        this.iterationIndex = index;
+    }
+
+    public HoverButton(int x, int y, int width, int height, EmoteNodeElement linkedEmote, IPressable pressedAction, ResourceLocation iconImage, int index) {
+        super(x, y, width, height, new TranslationTextComponent(linkedEmote.getLanguageKey()), pressedAction);
+        this.ICON_RESOURCE_LOCATION = iconImage;
+        this.linkedEmote = linkedEmote;
+        this.iterationIndex = index;
+    }
+
+    public HoverButton(int x, int y, int width, int height, ITextComponent title, IPressable pressedAction, ResourceLocation buttonImage, ResourceLocation iconImage, int index) {
         super(x, y, width, height, title, pressedAction);
         this.BUTTON_RESOURCE_LOCATION = buttonImage;
         this.ICON_RESOURCE_LOCATION = iconImage;
+        this.iterationIndex = index;
     }
 
-    public HoverButton(int x, int y, int width, int height, ITextComponent title, IPressable pressedAction, ResourceLocation iconImage) {
+    public HoverButton(int x, int y, int width, int height, ITextComponent title, IPressable pressedAction, ResourceLocation iconImage, int index) {
         super(x, y, width, height, title, pressedAction);
         this.ICON_RESOURCE_LOCATION = iconImage;
+        this.iterationIndex = index;
     }
 
     public HoverButton(int x, int y, int width, int height, ITextComponent title, IPressable pressedAction, ITooltip onTooltip) {
@@ -33,6 +63,12 @@ public class HoverButton extends Button {
 
     private ResourceLocation BUTTON_RESOURCE_LOCATION = new ResourceLocation("epic_emotes:textures/gui/hoverbutton.png");
     private ResourceLocation ICON_RESOURCE_LOCATION = null;
+
+    private final ResourceLocation REPEAT_ANIMATION_ICON = new ResourceLocation("epic_emotes:textures/gui/repeating_animation_type.png");
+    private final ResourceLocation FOLDER_ANIMATION_ICON = new ResourceLocation("epic_emotes:textures/gui/folder_type.png");
+    private final ResourceLocation ACTION_ANIMATION_ICON = new ResourceLocation("epic_emotes:textures/gui/action_animation_type.png");
+    private final ResourceLocation REPEAT_ANIMATION_SPINNER = new ResourceLocation("epic_emotes:textures/gui/repeating.png");
+    private final ResourceLocation FAVORITE_BUTTON = new ResourceLocation("epic_emotes:textures/gui/favorite_star.png");
 
     private float hoverTime = 0;
 
@@ -64,13 +100,61 @@ public class HoverButton extends Button {
         }
 
         if (this.ICON_RESOURCE_LOCATION != null) {
-
             minecraft.getTextureManager().bind(ICON_RESOURCE_LOCATION);
             RenderSystem.pushMatrix();
             RenderSystem.scaled(0.8f, 0.8f, 0.8f);
             this.blit(matrixStack, 6,6, 0, 0, 47, 47, 47, 47);
 
             RenderSystem.popMatrix();
+        }
+
+        if (this.linkedEmote != null) {
+
+            ResourceLocation locSave = null;
+
+            if (this.linkedEmote instanceof RepeatingEmote)
+                locSave = REPEAT_ANIMATION_ICON;
+            else if (this.linkedEmote instanceof ActionEmote)
+                locSave = ACTION_ANIMATION_ICON;
+            else
+                locSave = FOLDER_ANIMATION_ICON;
+
+            minecraft.getTextureManager().bind(locSave);
+            RenderSystem.pushMatrix();
+            RenderSystem.scaled(0.8f, 0.8f, 0.8f);
+            this.blit(matrixStack, 6,6, 0, 0, 47, 47, 47, 47);
+
+            if (EmoteSystem.getFavoriteEmotes().contains(this.linkedEmote)) {
+                minecraft.getTextureManager().bind(FAVORITE_BUTTON);
+                this.blit(matrixStack, 6,6, 0, 0, 47, 47, 47, 47);
+
+            }
+            
+            
+            RenderSystem.popMatrix();
+
+            EpicEmotesModVariables.PlayerVariables vars = EmoteSystem.getDataForPlayer(minecraft.player);
+
+            if (this.linkedEmote instanceof RepeatingEmote) {
+                if (Objects.equals(vars.currEmote, ((RepeatingEmote)this.linkedEmote).getLookupIdentifier())) {
+                    minecraft.getTextureManager().bind(REPEAT_ANIMATION_SPINNER);
+                    RenderSystem.pushMatrix();
+                    RenderSystem.translated(23.5, 23.5, 0);
+                    GL11.glPushMatrix();
+
+                    float timeBetween = minecraft.player.tickCount - vars.emoteStart + partialTicks;
+
+                    float scale = Math.min(timeBetween / 10, 1);
+
+                    GL11.glScaled(scale * 1.2f,scale * 1.2f,scale * 1.2f);
+                    RenderSystem.color4f(1, 1, 1, (float) Math.min(scale, Math.sin((minecraft.player.tickCount + partialTicks) / 6) * 0.25f + 0.4f));
+                    GL11.glRotated(-(minecraft.player.tickCount + partialTicks) * 3, 0, 0, 0.001);
+                    this.blit(matrixStack, -23,-23, 0, 0, 47, 47, 47, 47);
+                    GL11.glPopMatrix();
+
+                    RenderSystem.popMatrix();
+                }
+            }
 
         }
 

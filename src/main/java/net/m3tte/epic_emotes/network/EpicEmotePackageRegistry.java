@@ -15,8 +15,10 @@ public class EpicEmotePackageRegistry {
 
         addNetworkMessage(EpicEmotesModVariables.PlayerVariablesSyncMessage.class, EpicEmotesModVariables.PlayerVariablesSyncMessage::buffer, EpicEmotesModVariables.PlayerVariablesSyncMessage::new,
                 EpicEmotesModVariables.PlayerVariablesSyncMessage::handler);
-        addNetworkMessage(KeybindPackages.GenericKeybindingPressedMessage.class, KeybindPackages.GenericKeybindingPressedMessage::buffer, KeybindPackages.GenericKeybindingPressedMessage::new,
-                KeybindPackages.GenericKeybindingPressedMessage::handler);
+        addNetworkMessage(EmotePackagePrefabs.GenericKeybindingPressedMessage.class, EmotePackagePrefabs.GenericKeybindingPressedMessage::buffer, EmotePackagePrefabs.GenericKeybindingPressedMessage::new,
+                EmotePackagePrefabs.GenericKeybindingPressedMessage::handler);
+        addNetworkMessage(EmotePackagePrefabs.ExecuteEmotePackage.class, EmotePackagePrefabs.ExecuteEmotePackage::buffer, EmotePackagePrefabs.ExecuteEmotePackage::new,
+                EmotePackagePrefabs.ExecuteEmotePackage::handler);
 
 
     }

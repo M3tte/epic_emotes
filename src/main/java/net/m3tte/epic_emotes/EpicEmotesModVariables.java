@@ -1,11 +1,13 @@
 package net.m3tte.epic_emotes;
 
+import com.replaymod.recording.ReplayModRecording;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
+import net.minecraft.network.IPacket;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
@@ -22,8 +24,11 @@ import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.network.NetworkEvent;
 import net.minecraftforge.fml.network.PacketDistributor;
+import org.spongepowered.asm.mixin.Unique;
+import yesman.epicfight.network.EpicFightNetworkManager;
 
 import java.util.function.Supplier;
+
 
 public class EpicEmotesModVariables {
 	public EpicEmotesModVariables() {
@@ -71,6 +76,7 @@ public class EpicEmotesModVariables {
 		public INBT writeNBT(Capability<PlayerVariables> capability, PlayerVariables instance, Direction side) {
 			CompoundNBT nbt = new CompoundNBT();
 			nbt.putString("currentEmote", instance.currEmote);
+			nbt.putInt("emoteStart", instance.emoteStart);
 
 			return nbt;
 		}
@@ -79,18 +85,26 @@ public class EpicEmotesModVariables {
 		public void readNBT(Capability<PlayerVariables> capability, PlayerVariables instance, Direction side, INBT inbt) {
 			CompoundNBT nbt = (CompoundNBT) inbt;
 			instance.currEmote = nbt.getString("currentEmote");
+			instance.emoteStart = nbt.getInt("emoteStart");
 		}
 	}
 
 	public static class PlayerVariables {
 		public String currEmote = "";
+		public int emoteStart = 0;
 
 		public void syncEmote(Entity entity) {
-			if (entity instanceof ServerPlayerEntity)
-				EpicEmotesMod.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) entity), new PlayerVariablesSyncMessage(this));
+			if (entity instanceof ServerPlayerEntity) {
+
+				PlayerVariablesSyncMessage message = new PlayerVariablesSyncMessage(this);
+
+				EpicEmotesMod.PACKET_HANDLER.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) entity), message);
+			}
+
 		}
 
 	}
+
 
 	@SubscribeEvent
 	public void onPlayerLoggedInSyncPlayerVariables(PlayerEvent.PlayerLoggedInEvent event) {
@@ -122,6 +136,7 @@ public class EpicEmotesModVariables {
 
 		if (!event.isWasDeath()) {
 			clone.currEmote = original.currEmote;
+			clone.emoteStart = original.emoteStart;
 		}
 	}
 
@@ -148,6 +163,7 @@ public class EpicEmotesModVariables {
 					PlayerVariables variables = ((PlayerVariables) Minecraft.getInstance().player.getCapability(EMOTE_CAPABILITY, null)
 							.orElse(new PlayerVariables()));
 					variables.currEmote = message.data.currEmote;
+					variables.emoteStart = message.data.emoteStart;
 				}
 			});
 			context.setPacketHandled(true);

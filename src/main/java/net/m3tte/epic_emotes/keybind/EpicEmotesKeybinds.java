@@ -1,36 +1,23 @@
 
 package net.m3tte.epic_emotes.keybind;
 
-import io.netty.buffer.Unpooled;
 import net.m3tte.epic_emotes.EpicEmotesMod;
 import net.m3tte.epic_emotes.gui.EmoteChooseGUI;
-import net.m3tte.epic_emotes.network.KeybindPackages;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.INamedContainerProvider;
-import net.minecraft.util.text.ITextComponent;
+import net.m3tte.epic_emotes.gui.EmoteChooseWindow;
+import net.m3tte.epic_emotes.network.EmotePackagePrefabs;
+import net.minecraft.client.gui.screen.inventory.InventoryScreen;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.network.NetworkHooks;
 import org.lwjgl.glfw.GLFW;
 
-import net.minecraftforge.fml.network.NetworkEvent;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.api.distmarker.Dist;
 
-import net.minecraft.world.World;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.client.Minecraft;
-
-import java.util.function.Supplier;
 
 public class EpicEmotesKeybinds {
 	@OnlyIn(Dist.CLIENT)
@@ -46,19 +33,31 @@ public class EpicEmotesKeybinds {
 
 	}
 
-
+	public static boolean holdingShift = false;
 
 	@SubscribeEvent
 	@OnlyIn(Dist.CLIENT)
 	public void onKeyInput(InputEvent.KeyInputEvent event) {
+
+		int key = event.getKey();
 		if (Minecraft.getInstance().screen == null) {
 			if (event.getAction() == GLFW.GLFW_PRESS) {
-				if (event.getKey() == this.openUIBind.getKey().getValue()) {
-					EpicEmotesMod.PACKET_HANDLER.sendToServer(new KeybindPackages.GenericKeybindingPressedMessage(0, 0));
-
+				if (key == this.openUIBind.getKey().getValue()) {
+					//EpicEmotesMod.PACKET_HANDLER.sendToServer(new EmotePackagePrefabs.GenericKeybindingPressedMessage(0, 0));
+					Minecraft.getInstance().setScreen(new EmoteChooseWindow(new EmoteChooseGUI.GuiContainerMod(1, Minecraft.getInstance().player.inventory, null),Minecraft.getInstance().player.inventory, new StringTextComponent("")));
 
 				}
 
+			}
+
+		} else { // Exclusively for generic client side events.
+			if (event.getAction() == GLFW.GLFW_PRESS) {
+
+				if (key == GLFW.GLFW_KEY_LEFT_SHIFT)
+					holdingShift = true;
+			} else if (event.getAction() == GLFW.GLFW_RELEASE) {
+				if (key == GLFW.GLFW_KEY_LEFT_SHIFT)
+					holdingShift = false;
 			}
 
 		}

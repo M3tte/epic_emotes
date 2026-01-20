@@ -6,7 +6,7 @@ import java.util.ArrayList;
 
 public class EmoteCategory extends EmoteNodeElement {
 
-    private ArrayList<EmoteNodeElement> children = new ArrayList<>();
+    protected ArrayList<EmoteNodeElement> children = new ArrayList<>();
 
     public EmoteCategory(String languageKey, EmoteNodeElement parentElement, ResourceLocation icon) {
         super(languageKey, parentElement, icon);

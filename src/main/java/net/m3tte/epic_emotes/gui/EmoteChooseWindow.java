@@ -3,9 +3,10 @@ package net.m3tte.epic_emotes.gui;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
-import net.m3tte.epic_emotes.systems.EmoteCategory;
-import net.m3tte.epic_emotes.systems.EmoteNodeElement;
-import net.m3tte.epic_emotes.systems.EmoteSystem;
+import net.m3tte.epic_emotes.EpicEmotesMod;
+import net.m3tte.epic_emotes.keybind.EpicEmotesKeybinds;
+import net.m3tte.epic_emotes.network.EmotePackagePrefabs;
+import net.m3tte.epic_emotes.systems.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.entity.player.PlayerEntity;
@@ -18,8 +19,11 @@ import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import yesman.epicfight.api.animation.types.ActionAnimation;
 
 import java.util.HashMap;
+
+import static net.m3tte.epic_emotes.systems.EmoteSystem.clientSideOverrideMotion;
 
 @OnlyIn(Dist.CLIENT)
 public class EmoteChooseWindow extends ContainerScreen<EmoteChooseGUI.GuiContainerMod> {
@@ -31,9 +35,11 @@ public class EmoteChooseWindow extends ContainerScreen<EmoteChooseGUI.GuiContain
 	private final ResourceLocation RETURN_LOC = new ResourceLocation("epic_emotes:textures/gui/returnbutton.png");
 	private final ResourceLocation DEFAULT_SIT_ICON = new ResourceLocation("epic_emotes:textures/gui/sit.png");
 
-	private EmoteCategory selectedElement = EmoteSystem.getRootCategory();
+	private static EmoteCategory selectedElement = EmoteSystem.getRootCategory();
 
-
+	public static EmoteCategory getLocalSelectedCategory() {
+		return selectedElement;
+	}
 
 	private Tuple<Double, Double> generatePositionFromRotation(float rotPercent) {
 		Double absoluteRot = Math.PI * 2 * rotPercent;
@@ -53,6 +59,11 @@ public class EmoteChooseWindow extends ContainerScreen<EmoteChooseGUI.GuiContain
 		this.entity = container.entity;
 		this.x = 217;
 		this.y = 173;
+	}
+
+	@Override
+	protected void renderLabels(MatrixStack p_230451_1_, int p_230451_2_, int p_230451_3_) {
+
 	}
 
 	@Override
@@ -122,26 +133,39 @@ public class EmoteChooseWindow extends ContainerScreen<EmoteChooseGUI.GuiContain
 					selectedElement = (EmoteCategory) selectedElement.getParent();
 					init(minecraft, width, height);
 				}
-
-				}, RETURN_LOC, null));
-
+				}, RETURN_LOC, null, 0));
 		}
 
 		double steps = 1d / selectedElement.getChildren().size();
 
 		float val = 0;
 
+		int idx = 0;
+
 		for (EmoteNodeElement elm : selectedElement.getChildren()) {
 
 			Tuple<Double, Double> position = generatePositionFromRotation(val);
 
-			this.addButton(new HoverButton((int)(centerX + position.getA() - 24), (int)(centerY + position.getB()) - 24, 47, 47, new TranslationTextComponent(elm.getLanguageKey()), e -> {
+
+			this.addButton(new HoverButton((int)(centerX + position.getA() - 24), (int)(centerY + position.getB()) - 24, 47, 47, elm, e -> {
 				if (elm instanceof EmoteCategory) {
 					selectedElement = (EmoteCategory) elm;
 					init(minecraft, width, height);
+				} else if (elm instanceof ActionEmote) {
+
+					System.out.println("SHIFT IS "+EpicEmotesKeybinds.holdingShift);
+
+					if (EpicEmotesKeybinds.holdingShift) {
+						EmoteSystem.toggleFavoriteEmote((ActionEmote) elm);
+						return;
+					}
+
+
+					EpicEmotesMod.PACKET_HANDLER.sendToServer(new EmotePackagePrefabs.ExecuteEmotePackage(entity, ((ActionEmote) elm).getLookupIdentifier()));
 				}
-			}, elm.getIcon()));
+			}, elm.getIcon(), idx));
 			val += steps;
+			idx++;
 		}
 
 
