@@ -7,10 +7,10 @@
   "server": [
   ],
   "mixins": [
-    "PlayerPatchMixin",
     "compat.replaymod.EpicFightNetworkManagerMixin"
   ],
   "client": [
+    "PlayerPatchMixin",
     "LivingMotionCalcMixin"
   ],
   "minVersion": "0.8"

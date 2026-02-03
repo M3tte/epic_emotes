@@ -1,5 +1,6 @@
 package net.m3tte.epic_emotes.mixin.compat.replaymod;
 
+
 import com.replaymod.recording.ReplayModRecording;
 import net.minecraft.network.IPacket;
 import net.minecraftforge.fml.network.PacketDistributor;

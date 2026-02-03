@@ -1,6 +1,6 @@
 package net.m3tte.epic_emotes;
 
-import com.replaymod.recording.ReplayModRecording;
+// import com.replaymod.recording.ReplayModRecording;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;

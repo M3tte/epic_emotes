@@ -1,9 +1,14 @@
 package net.m3tte.epic_emotes.mixin;
 
+import net.m3tte.epic_emotes.EpicEmotesMod;
 import net.m3tte.epic_emotes.EpicEmotesModVariables;
 import net.m3tte.epic_emotes.gameasset.EELivingMotions;
+import net.m3tte.epic_emotes.network.EmotePackagePrefabs;
+import net.m3tte.epic_emotes.systems.ActionEmote;
 import net.m3tte.epic_emotes.systems.EmoteSystem;
 import net.m3tte.epic_emotes.systems.RepeatingEmote;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -15,7 +20,7 @@ import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
 import yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch;
 
 import static net.m3tte.epic_emotes.EpicEmotesModVariables.EMOTE_CAPABILITY;
-
+@OnlyIn(Dist.CLIENT)
 @Mixin(value = AbstractClientPlayerPatch.class, remap = false)
 public class LivingMotionCalcMixin {
 
@@ -40,6 +45,8 @@ public class LivingMotionCalcMixin {
 
         if (patch == null)
             return;
+
+
 
         EpicEmotesModVariables.PlayerVariables entityData = patch.getOriginal().getCapability(EMOTE_CAPABILITY, null).orElse(null);
 
@@ -66,10 +73,12 @@ public class LivingMotionCalcMixin {
                 if (targetEmote instanceof RepeatingEmote) {
 
                     if (moveLock) {
-                        if (targetEmote.getEndAnimation() != null)
+                        /*if (targetEmote.getEndAnimation() != null)
                             patch.playAnimationSynchronized(((RepeatingEmote) targetEmote).getEndAnimation(), 0);
                         entityData.currEmote = "";
-                        entityData.syncEmote(patch.getOriginal());
+                        entityData.syncEmote(patch.getOriginal());*/
+
+                        EpicEmotesMod.PACKET_HANDLER.sendToServer(new EmotePackagePrefabs.CancelEmotePackage(patch.getOriginal(), ((ActionEmote) targetEmote).getLookupIdentifier()));
                     }
                 }
 

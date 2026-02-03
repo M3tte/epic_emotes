@@ -16,6 +16,10 @@ import static net.m3tte.epic_emotes.EpicEmotesModVariables.EMOTE_CAPABILITY;
 
 public class EmoteSystem {
     private static final ResourceLocation DEFAULT_SIT_ICON = new ResourceLocation("epic_emotes:textures/gui/sit.png");
+    private static final ResourceLocation STANDING_ICON = new ResourceLocation("epic_emotes:textures/gui/standing.png");
+    private static final ResourceLocation CAMPFIRE_SIT_ICON = new ResourceLocation("epic_emotes:textures/gui/campfire_sit.png");
+    private static final ResourceLocation SURRENDER_ICON = new ResourceLocation("epic_emotes:textures/gui/surrender.png");
+    private static final ResourceLocation SALUTE_1_ICON = new ResourceLocation("epic_emotes:textures/gui/salute_1.png");
     private static final ResourceLocation FAVORITE_ICON = new ResourceLocation("epic_emotes:textures/gui/favorites.png");
 
     private static String PREFIX = "gui.epic_emotes.";
@@ -66,19 +70,19 @@ public class EmoteSystem {
         EmoteCategory SITTING = (EmoteCategory) rootEmote.addChild(new EmoteCategory(PREFIX+"category.sitting", null, DEFAULT_SIT_ICON));
 
         SITTING.addChild(registerEmote(new RepeatingEmote(PREFIX+"sit1", "sit1", rootEmote, EpicEmotesAnimations.SIT_1_IDLE, EpicEmotesAnimations.SIT_1_START, EpicEmotesAnimations.SIT_1_END, DEFAULT_SIT_ICON)));
-        SITTING.addChild(registerEmote(new RepeatingEmote(PREFIX+"sit_fire", "sit_fire", rootEmote, EpicEmotesAnimations.SIT_FIRE_IDLE, EpicEmotesAnimations.SIT_FIRE_START, EpicEmotesAnimations.SIT_FIRE_END, DEFAULT_SIT_ICON)));
+        SITTING.addChild(registerEmote(new RepeatingEmote(PREFIX+"sit_fire", "sit_fire", rootEmote, EpicEmotesAnimations.SIT_FIRE_IDLE, EpicEmotesAnimations.SIT_FIRE_START, EpicEmotesAnimations.SIT_FIRE_END, CAMPFIRE_SIT_ICON)));
 
-        EmoteCategory STANDING = (EmoteCategory) rootEmote.addChild(new EmoteCategory(PREFIX+"category.standing", null, DEFAULT_SIT_ICON));
+        EmoteCategory STANDING = (EmoteCategory) rootEmote.addChild(new EmoteCategory(PREFIX+"category.standing", null, STANDING_ICON));
 
-        STANDING.addChild(registerEmote(new RepeatingEmote(PREFIX+"wall_lean_1", "wall_lean_1", rootEmote, EpicEmotesAnimations.WALL_LEAN_1_IDLE, EpicEmotesAnimations.WALL_LEAN_1_START, EpicEmotesAnimations.WALL_LEAN_1_END, DEFAULT_SIT_ICON)));
-        STANDING.addChild(registerEmote(new RepeatingEmote(PREFIX+"wall_lean_2", "wall_lean_2", rootEmote, EpicEmotesAnimations.WALL_LEAN_2_IDLE, EpicEmotesAnimations.WALL_LEAN_2_START, EpicEmotesAnimations.WALL_LEAN_2_END, DEFAULT_SIT_ICON)));
-        STANDING.addChild(registerEmote(new RepeatingEmote(PREFIX+"sorrow", "sorrow", rootEmote, EpicEmotesAnimations.SORROW, null, null, DEFAULT_SIT_ICON)));
+        STANDING.addChild(registerEmote(new RepeatingEmote(PREFIX+"wall_lean_1", "wall_lean_1", rootEmote, EpicEmotesAnimations.WALL_LEAN_1_IDLE, EpicEmotesAnimations.WALL_LEAN_1_START, EpicEmotesAnimations.WALL_LEAN_1_END, STANDING_ICON)));
+        STANDING.addChild(registerEmote(new RepeatingEmote(PREFIX+"wall_lean_2", "wall_lean_2", rootEmote, EpicEmotesAnimations.WALL_LEAN_2_IDLE, EpicEmotesAnimations.WALL_LEAN_2_START, EpicEmotesAnimations.WALL_LEAN_2_END, STANDING_ICON)));
+        STANDING.addChild(registerEmote(new RepeatingEmote(PREFIX+"sorrow", "sorrow", rootEmote, EpicEmotesAnimations.SORROW, null, null, STANDING_ICON)));
 
-        EmoteCategory GESTURES = (EmoteCategory) rootEmote.addChild(new EmoteCategory(PREFIX+"category.gestures", null, DEFAULT_SIT_ICON));
-        GESTURES.addChild(registerEmote(new RepeatingEmote(PREFIX+"surrender", "surrender", rootEmote, EpicEmotesAnimations.SURRENDER, EpicEmotesAnimations.SURRENDER_START, EpicEmotesAnimations.SURRENDER_END, DEFAULT_SIT_ICON)));
-        GESTURES.addChild(registerEmote(new ActionEmote(PREFIX+"yes", "yes", rootEmote, EpicEmotesAnimations.NOD_YES, DEFAULT_SIT_ICON)));
-        GESTURES.addChild(registerEmote(new ActionEmote(PREFIX+"no", "no", rootEmote, EpicEmotesAnimations.SHAKE_HEAD_NO, DEFAULT_SIT_ICON)));
-        GESTURES.addChild(registerEmote(new RepeatingEmote(PREFIX+"salute_1", "salute_1", rootEmote, EpicEmotesAnimations.SALUTE_1, EpicEmotesAnimations.SALUTE_1_START, EpicEmotesAnimations.SALUTE_1_END, DEFAULT_SIT_ICON)));
+        EmoteCategory GESTURES = (EmoteCategory) rootEmote.addChild(new EmoteCategory(PREFIX+"category.gestures", null, STANDING_ICON));
+        GESTURES.addChild(registerEmote(new RepeatingEmote(PREFIX+"surrender", "surrender", rootEmote, EpicEmotesAnimations.SURRENDER, EpicEmotesAnimations.SURRENDER_START, EpicEmotesAnimations.SURRENDER_END, SURRENDER_ICON)));
+        GESTURES.addChild(registerEmote(new ActionEmote(PREFIX+"yes", "yes", rootEmote, EpicEmotesAnimations.NOD_YES, STANDING_ICON)));
+        GESTURES.addChild(registerEmote(new ActionEmote(PREFIX+"no", "no", rootEmote, EpicEmotesAnimations.SHAKE_HEAD_NO, STANDING_ICON)));
+        GESTURES.addChild(registerEmote(new RepeatingEmote(PREFIX+"salute_1", "salute_1", rootEmote, EpicEmotesAnimations.SALUTE_1, EpicEmotesAnimations.SALUTE_1_START, EpicEmotesAnimations.SALUTE_1_END, SALUTE_1_ICON)));
 
         EmoteCategory LAYING = (EmoteCategory) rootEmote.addChild(new EmoteCategory(PREFIX+"category.laying", null, DEFAULT_SIT_ICON));
 
@@ -173,5 +177,7 @@ public class EmoteSystem {
 
         entitypatch.playAnimationSynchronized(emote.getAnimation(), 0);
     }
+
+
 
 }

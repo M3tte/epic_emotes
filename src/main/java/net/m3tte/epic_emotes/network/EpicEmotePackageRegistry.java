@@ -15,11 +15,14 @@ public class EpicEmotePackageRegistry {
 
         addNetworkMessage(EpicEmotesModVariables.PlayerVariablesSyncMessage.class, EpicEmotesModVariables.PlayerVariablesSyncMessage::buffer, EpicEmotesModVariables.PlayerVariablesSyncMessage::new,
                 EpicEmotesModVariables.PlayerVariablesSyncMessage::handler);
-        addNetworkMessage(EmotePackagePrefabs.GenericKeybindingPressedMessage.class, EmotePackagePrefabs.GenericKeybindingPressedMessage::buffer, EmotePackagePrefabs.GenericKeybindingPressedMessage::new,
-                EmotePackagePrefabs.GenericKeybindingPressedMessage::handler);
+        addNetworkMessage(ClientEmotePackagePrefabs.GenericKeybindingPressedMessage.class, ClientEmotePackagePrefabs.GenericKeybindingPressedMessage::buffer, ClientEmotePackagePrefabs.GenericKeybindingPressedMessage::new,
+                ClientEmotePackagePrefabs.GenericKeybindingPressedMessage::handler);
         addNetworkMessage(EmotePackagePrefabs.ExecuteEmotePackage.class, EmotePackagePrefabs.ExecuteEmotePackage::buffer, EmotePackagePrefabs.ExecuteEmotePackage::new,
                 EmotePackagePrefabs.ExecuteEmotePackage::handler);
-
+        addNetworkMessage(EmotePackagePrefabs.CancelEmotePackage.class, EmotePackagePrefabs.CancelEmotePackage::buffer, EmotePackagePrefabs.CancelEmotePackage::new,
+                EmotePackagePrefabs.CancelEmotePackage::handler);
+        addNetworkMessage(ClientEmotePackagePrefabs.ClientCascadeLivingAnimation.class, ClientEmotePackagePrefabs.ClientCascadeLivingAnimation::buffer, ClientEmotePackagePrefabs.ClientCascadeLivingAnimation::new,
+                ClientEmotePackagePrefabs.ClientCascadeLivingAnimation::handler);
 
     }
 

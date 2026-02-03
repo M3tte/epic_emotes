@@ -1,7 +1,6 @@
 package net.m3tte.epic_emotes.mixin;
 
 import net.m3tte.epic_emotes.EpicEmotesMod;
-import net.minecraft.client.Minecraft;
 import net.minecraftforge.fml.loading.FMLLoader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
